@@ -1,0 +1,47 @@
+.entity {
+    aspect-ratio: 1 / 1.61;
+    height: 20vh;
+
+    position: relative;
+}
+
+.entity > progress {
+    position: absolute;
+    left: 10%;
+    bottom: 5%;
+    width: 80%;
+
+    accent-color: #f00;
+}
+
+.enemy {
+    background-color: #f00;
+}
+
+.ally {
+    background-color: #0af;
+}
+
+#entities {
+    display: flex;
+    padding: 2vh;
+    border: 1vh solid #000;
+}
+
+#entities > div {
+    display: flex;
+}
+
+#enemies {
+    justify-content: end;
+    flex-grow: 2;
+}
+
+#allies {
+    flex-grow: 1;
+}
+
+.wrapper {
+    position: absolute;
+    inset: 0;
+}
