@@ -1,18 +1,21 @@
 import {ALL_MOVES} from './cards.js'
-import { HTML_CONTAINER_MOVES, HTML_CONTAINER_ENEMIES, HTML_CONTAINER_ALLIES} from './config.js'
+import * as CONFIG from './config.js'
 import animations from './animations.js'
 
-
 const HTML_CONTAINERS = {
-    ally: HTML_CONTAINER_ALLIES,
-    enemy: HTML_CONTAINER_ENEMIES,
-    moves: HTML_CONTAINER_MOVES,
+    ally: CONFIG.HTML_CONTAINER_ALLIES,
+    enemy: CONFIG.HTML_CONTAINER_ENEMIES,
+    moves: CONFIG.HTML_CONTAINER_MOVES,
 }
 
 export {ENTITIES}
 
+const EXPERIENCE_MAP = [3, 5, 10];
+const MAX_ENEMIES = 8;
+
 class Entity {
     constructor(options) {
+        if (ENTITIES.length >= MAX_ENEMIES + 1) return
         options ??= {}
         this.maxHealth = options.maxHealth ?? 10;
         this.health = options.health ?? this.maxHealth;
@@ -34,6 +37,20 @@ class Entity {
             }, animations.blades.blade1.durationInMiliseconds)
         });
 
+        this.updateSelf = () => {
+            this.healthbar.value = this.health
+            while (this.experience >= EXPERIENCE_MAP[this.level]) {
+                this.experience -= EXPERIENCE_MAP[this.level]
+                this.level++
+                this.onlevelUp()
+            }
+            this.experiencebar.value = this.experience;
+            this.experiencebar.max = EXPERIENCE_MAP[this.level]
+        }
+
+        this.onkill = options.onkill ?? null
+        this.experienceValue = options.experienceValue ?? 1;
+
         
         
         ENTITIES.push(this)
@@ -45,7 +62,26 @@ class Entity {
         HTMLElement.classList.add('entity');
         HTMLElement.classList.add(this.team);
         
+        
+        this.HTMLElement = HTMLElement;
+        
+        if (this.team == 'ally') {
+            this.level = options.level ?? 0;
+            this.experience = options.experience ?? 0;
+            const experiencebar = document.createElement('progress')
+            experiencebar.classList.add('experiencebar')
+            experiencebar.max = EXPERIENCE_MAP[this.level]
+            experiencebar.value = this.experience
+            
+            this.experiencebar = experiencebar
+            
+            HTMLElement.appendChild(experiencebar)
+
+            this.onlevelUp = null
+        }
+
         const healthbar = document.createElement('progress')
+        healthbar.classList.add('healthbar')
         healthbar.max = this.maxHealth
         healthbar.value = this.health
         
@@ -53,8 +89,7 @@ class Entity {
         
         HTMLElement.appendChild(healthbar)
 
-        this.HTMLElement = HTMLElement;
-        console.log(HTML_CONTAINER_ENEMIES)
+        console.log(this.team)
         
         HTML_CONTAINERS[this.team].appendChild(this.HTMLElement)
     }
@@ -72,7 +107,7 @@ for (let move in ALL_MOVES) {
     const card = document.createElement('div');
     card.classList.add('move')
     card.innerHTML = move
-    card.style.backgroundColor = MOVE_COLORS[ALL_MOVES[move].type]
+    card.style.background = MOVE_COLORS[ALL_MOVES[move].type]
     card.onclick = ALL_MOVES[move].action
     
     
@@ -84,7 +119,19 @@ document.querySelector('button').onclick = () => {
     new Entity
 }
 
-new Entity({team: 'ally'})
+export const PLAYER = new Entity({
+    team: 'ally',
+
+    ondeath: () => {
+        gameOver('lose')
+    },
+
+    onkill: function(target) {
+        this.experience += target.experienceValue
+        this.updateSelf()
+    }
+})
+PLAYER.experience = 0;
 
 function getRandomKey(object) {
     let keys = [];
@@ -93,4 +140,12 @@ function getRandomKey(object) {
     }
 
     return keys[Math.floor(Math.random() * keys.length)]
+}
+
+const log = document.querySelector('#log')
+
+function gameOver(outcome, score) {
+    
+
+    log.innerHTML = '<h1>You lost!<br>Better luck next time!</h1>'
 }

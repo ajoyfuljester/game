@@ -1,17 +1,23 @@
 .entity {
     aspect-ratio: 1 / 1.61;
     height: 20vh;
-
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
     position: relative;
 }
 
 .entity > progress {
-    position: absolute;
-    left: 10%;
-    bottom: 5%;
     width: 80%;
+    margin-inline: 10%;
+}
 
+.healthbar {
     accent-color: #f00;
+}
+
+.experiencebar {
+    accent-color: #0af;
 }
 
 .enemy {
@@ -30,6 +36,7 @@
 
 #entities > div {
     display: flex;
+    gap: 1vw;
 }
 
 #enemies {
@@ -39,9 +46,18 @@
 
 #allies {
     flex-grow: 1;
+    min-width: 20vh;
 }
 
 .wrapper {
     position: absolute;
     inset: 0;
+}
+
+#log {
+    display: grid;
+    place-items: center;
+    text-align: center;
+    height: max-content;
+    font-size: 5rem;
 }

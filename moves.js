@@ -1,4 +1,4 @@
-import {ENTITIES} from './script.js'
+import {ENTITIES, PLAYER} from './game.js'
 import animations from './animations.js';
 
 export {
@@ -6,17 +6,22 @@ export {
     upateEntities
 }
 
-function attack(target, damage, type = 'blades') {
-    target.health -= damage;
-    target.onhurt(type)
-    upateEntities()
+function attack(targets, damage, type = 'blades') {
+    
+    for (const target of targets) {
+        target.health -= damage;
+        target.onhurt(type)
+        console.log(target)
+    }
+    upateEntities(targets)
 }
 
-function upateEntities() {
-    for (const entity of ENTITIES) {
-        entity.healthbar.value = entity.health
-        if (entity.health <= 0) {
-            entity.ondeath()
+function upateEntities(targets) {
+    for (const target of targets) {
+        target.updateSelf()
+        if (target.health <= 0) {
+            PLAYER.onkill(target)
+            target.ondeath()
         }
     }
 }
