@@ -1,26 +1,26 @@
 import {ENTITIES, PLAYER} from './game.js'
-import animations from './animations.js';
+import animations from './animations-and-graphics.js';
 
 export {
     attack,
     upateEntities
 }
 
-function attack(targets, damage, type = 'blades') {
-    
+function attack(origin, targets, damage, type = 'blades') {
+    origin.onattack()
+    console.log(origin)
     for (const target of targets) {
         target.health -= damage;
         target.onhurt(type)
-        console.log(target)
     }
-    upateEntities(targets)
+    upateEntities(origin, targets)
 }
 
-function upateEntities(targets) {
+function upateEntities(origin, targets) {
     for (const target of targets) {
         target.updateSelf()
         if (target.health <= 0) {
-            PLAYER.onkill(target)
+            origin.onkill(target)
             target.ondeath()
         }
     }

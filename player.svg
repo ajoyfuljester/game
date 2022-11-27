@@ -1,0 +1,6 @@
+<svg viewBox="0 0 200 322" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect id="nothing" width="200" height="322"/>
+<path id="blade2" d="M184.87 112L100 259L15.1295 112L184.87 112Z" fill="#550055" stroke="white" stroke-width="2"/>
+<path id="blade1" d="M15.1295 210L100 63L184.87 210H15.1295Z" fill="#550055" stroke="white" stroke-width="2"/>
+<circle id="main" cx="100" cy="161" r="30" fill="#770077"/>
+</svg>

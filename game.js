@@ -1,6 +1,6 @@
 import {ALL_MOVES} from './cards.js'
 import * as CONFIG from './config.js'
-import animations from './animations.js'
+import animationsAndGraphics from './animations-and-graphics.js'
 
 const HTML_CONTAINERS = {
     ally: CONFIG.HTML_CONTAINER_ALLIES,
@@ -25,16 +25,16 @@ class Entity {
             ENTITIES.splice(ENTITIES.indexOf(this), 1)
             console.log(ENTITIES)
         }
+
         this.onhurt = options.onhurt ?? ((type) => {
-            console.log(ENTITIES, this.onhurt)
             const animationElement = document.createElement('div')
             animationElement.classList.add('wrapper')
 
-            animationElement.innerHTML = animations[type][getRandomKey(animations[type])].element
+            animationElement.innerHTML = animationsAndGraphics.animations[type][getRandomKey(animationsAndGraphics.animations[type])].element
             HTMLElement.appendChild(animationElement)
             setTimeout(() => {
                 animationElement.remove()
-            }, animations.blades.blade1.durationInMiliseconds)
+            }, animationsAndGraphics.animations.blades.blade1.durationInMiliseconds)
         });
 
         this.updateSelf = () => {
@@ -44,20 +44,30 @@ class Entity {
                 this.level++
                 this.onlevelUp()
             }
-            this.experiencebar.value = this.experience;
-            this.experiencebar.max = EXPERIENCE_MAP[this.level]
+            if (this.experiencebar != undefined) {
+                this.experiencebar.value = this.experience;
+                this.experiencebar.max = EXPERIENCE_MAP[this.level]
+            }
         }
 
         this.onkill = options.onkill ?? null
+        this.onattack = options.onattack ?? function() {
+            HTMLElement.animate(
+                [{
+                    translate: '10% 0'
+                }, {
+                    translate: '0'
+                }
+            ], {
+                duration: 200
+            })
+        }
         this.experienceValue = options.experienceValue ?? 1;
 
         
         
         ENTITIES.push(this)
-        console.log(ENTITIES)
-        
-        console.log(this)
-        
+                
         const HTMLElement = document.createElement('div');
         HTMLElement.classList.add('entity');
         HTMLElement.classList.add(this.team);
@@ -88,10 +98,10 @@ class Entity {
         this.healthbar = healthbar
         
         HTMLElement.appendChild(healthbar)
-
-        console.log(this.team)
         
         HTML_CONTAINERS[this.team].appendChild(this.HTMLElement)
+
+        console.log(this)
     }
 }
 
@@ -129,9 +139,38 @@ export const PLAYER = new Entity({
     onkill: function(target) {
         this.experience += target.experienceValue
         this.updateSelf()
+    },
+
+    onattack: function(target) {
+        this.HTMLElement.animate(
+            [{
+                translate: '15% 0'
+            }, {
+                translate: '0'
+            }
+        ], {
+            duration: 100
+        })
+
+        document.querySelector('.ally svg #blade1').animate(
+            [{
+                transform: 'rotateZ(0deg)',
+                transformOrigin: 'center',
+            }, {
+                transform: 'rotateZ(120deg)',
+                transformOrigin: 'center',
+            }
+        ], {
+            duration: 400,
+            easing: 'ease-in-out'
+        })
     }
 })
 PLAYER.experience = 0;
+const PLAYER_IMAGE = document.createElement('div')
+PLAYER_IMAGE.classList.add('wrapper')
+PLAYER_IMAGE.innerHTML = animationsAndGraphics.graphics.mainCharacter
+PLAYER.HTMLElement.appendChild(PLAYER_IMAGE)
 
 function getRandomKey(object) {
     let keys = [];

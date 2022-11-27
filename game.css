@@ -5,11 +5,13 @@
     flex-direction: column;
     justify-content: end;
     position: relative;
+    z-index: -10;
 }
 
 .entity > progress {
     width: 80%;
     margin-inline: 10%;
+    z-index: 10;
 }
 
 .healthbar {
